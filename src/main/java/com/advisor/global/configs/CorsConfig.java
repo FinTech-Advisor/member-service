@@ -1,39 +1,43 @@
 
 package com.advisor.global.configs;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import org.modelmapper.ModelMapper;
-import org.modelmapper.convention.MatchingStrategies;
+
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Lazy;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.util.StringUtils;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.filter.CorsFilter;
+
+import java.util.Arrays;
+import java.util.List;
 
 @Configuration
 public class CorsConfig {
 
-    @Lazy
+    @Value("${cors.allowed}")
+    private String allowedOrigin;
+
     @Bean
-    public RestTemplate restTemplate() {
-        return new RestTemplate();
-    }
+    public CorsFilter corsFilter() {
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
 
-    @Lazy
-    @Bean
-    public ModelMapper modelMapper() {
-        ModelMapper mapper = new ModelMapper();
-        mapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
+        CorsConfiguration config = new CorsConfiguration();
 
-        return mapper;
-    }
+        config.addAllowedMethod("*");
+        config.addAllowedHeader("*");
 
-    @Lazy
-    @Bean
-    public ObjectMapper objectMapper() {
-        ObjectMapper om = new ObjectMapper();
-        om.registerModule(new JavaTimeModule()); // java8 data & time api - java.time 패키지
+        if (StringUtils.hasText(allowedOrigin)) {
+            List<String> origins = Arrays.stream(allowedOrigin.split(",")).toList();
+            config.setAllowedOrigins(origins);
+            config.setAllowCredentials(true);
+        } else {
+            config.addAllowedOrigin("*");
+        }
 
-        return om;
+        source.registerCorsConfiguration("/**", config);
+
+        return new CorsFilter(source);
     }
 }
