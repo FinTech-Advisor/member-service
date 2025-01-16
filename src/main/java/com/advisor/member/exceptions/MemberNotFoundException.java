@@ -1,6 +1,7 @@
 package com.advisor.member.exceptions;
 
-import org.koreait.global.exceptions.CommonException;
+
+import com.advisor.global.exceptions.CommonException;
 import org.springframework.http.HttpStatus;
 
 public class MemberNotFoundException extends CommonException {

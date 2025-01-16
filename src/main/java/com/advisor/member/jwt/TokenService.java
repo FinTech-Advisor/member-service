@@ -1,13 +1,13 @@
 package com.advisor.member.jwt;
 
+import com.advisor.global.exceptions.UnAuthorizedException;
+import com.advisor.global.libs.Utils;
+import com.advisor.member.MemberInfo;
+import com.advisor.member.services.MemberInfoService;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.HttpServletRequest;
-import org.koreait.global.exceptions.UnAuthorizedException;
-import org.koreait.global.libs.Utils;
-import com.advisor.member.MemberInfo;
-import com.advisor.member.services.MemberInfoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;

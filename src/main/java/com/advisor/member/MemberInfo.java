@@ -1,10 +1,10 @@
 package com.advisor.member;
 
+import com.advisor.member.entities.Member;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-import org.koreait.member.entities.Member;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 

@@ -1,7 +1,8 @@
 package com.advisor.member.repositories;
 
-import org.koreait.member.entities.Member;
-import org.koreait.member.entities.QMember;
+
+import com.advisor.member.entities.Member;
+import com.advisor.member.entities.QMember;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.querydsl.QuerydslPredicateExecutor;

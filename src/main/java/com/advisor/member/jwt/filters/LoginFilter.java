@@ -1,5 +1,6 @@
 package com.advisor.member.jwt.filters;
 
+import com.advisor.global.exceptions.UnAuthorizedException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletRequest;
@@ -7,7 +8,7 @@ import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import org.koreait.global.exceptions.UnAuthorizedException;
+
 import com.advisor.member.jwt.TokenService;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.GenericFilterBean;

@@ -1,9 +1,9 @@
 package com.advisor.member.validators;
 
-import lombok.RequiredArgsConstructor;
-import org.koreait.global.validators.PasswordValidator;
+import com.advisor.global.validators.PasswordValidator;
 import com.advisor.member.controllers.RequestJoin;
 import com.advisor.member.repositories.MemberRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;

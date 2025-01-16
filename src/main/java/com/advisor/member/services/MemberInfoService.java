@@ -1,13 +1,13 @@
 package com.advisor.member.services;
 
+import com.advisor.member.MemberInfo;
+import com.advisor.member.constants.Authority;
+import com.advisor.member.entities.Authorities;
+import com.advisor.member.entities.Member;
+import com.advisor.member.repositories.MemberRepository;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
-import com.advisor.member.MemberInfo;
-import com.advisor.member.constants.Authority;
-import org.koreait.member.entities.Authorities;
-import org.koreait.member.entities.Member;
-import com.advisor.member.repositories.MemberRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;

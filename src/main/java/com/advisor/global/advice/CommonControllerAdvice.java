@@ -1,6 +1,8 @@
 package com.advisor.global.advice;
 
+import com.advisor.global.exceptions.CommonException;
 import com.advisor.global.libs.Utils;
+import com.advisor.global.rests.JSONData;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

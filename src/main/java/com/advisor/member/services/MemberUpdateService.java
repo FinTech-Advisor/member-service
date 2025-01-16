@@ -1,13 +1,13 @@
 package com.advisor.member.services;
 
-import lombok.RequiredArgsConstructor;
 import com.advisor.member.constants.Authority;
 import com.advisor.member.controllers.RequestJoin;
-import org.koreait.member.entities.Authorities;
-import org.koreait.member.entities.Member;
-import org.koreait.member.entities.QAuthorities;
+import com.advisor.member.entities.Authorities;
+import com.advisor.member.entities.Member;
+import com.advisor.member.entities.QAuthorities;
 import com.advisor.member.repositories.AuthoritiesRepository;
 import com.advisor.member.repositories.MemberRepository;
+import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.security.crypto.password.PasswordEncoder;

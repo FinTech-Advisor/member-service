@@ -1,17 +1,17 @@
 package com.advisor.member.controllers;
 
+import com.advisor.global.exceptions.BadRequestException;
+import com.advisor.global.libs.Utils;
+import com.advisor.global.rests.JSONData;
+import com.advisor.member.MemberInfo;
+import com.advisor.member.jwt.TokenService;
+import com.advisor.member.services.MemberUpdateService;
+import com.advisor.member.validators.JoinValidator;
+import com.advisor.member.validators.LoginValidator;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.koreait.global.exceptions.BadRequestException;
-import org.koreait.global.libs.Utils;
-import org.koreait.global.rests.JSONData;
-import com.advisor.member.MemberInfo;
-import org.koreait.member.jwt.TokenService;
-import org.koreait.member.services.MemberUpdateService;
-import org.koreait.member.validators.JoinValidator;
-import org.koreait.member.validators.LoginValidator;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;

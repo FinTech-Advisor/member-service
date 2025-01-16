@@ -1,10 +1,10 @@
 package com.advisor.member.entities;
 
+import com.advisor.global.entities.BaseEntity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.ToString;
-import org.koreait.global.entities.BaseEntity;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
