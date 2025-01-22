@@ -1,4 +1,4 @@
-package org.advisor.member.controllers;
+package org.advisor.admin.member.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.advisor.global.libs.Utils;

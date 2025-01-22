@@ -4,12 +4,12 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
 @Data
-public class RequestLogin {
+public class RequstFindPw {
     @NotBlank
     private String id;
+    @NotBlank
+    private String name;
+    @NotBlank
+    private String email;
 
-    @NotBlank
-    private String password;
-    @NotBlank
-    private String security;
 }
