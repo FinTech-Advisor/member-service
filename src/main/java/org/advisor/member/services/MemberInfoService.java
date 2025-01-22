@@ -29,8 +29,8 @@ public class MemberInfoService implements UserDetailsService {
     private final ModelMapper modelMapper;
 
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Member member = memberRepository.findByEmail(username).orElseThrow(() -> new UsernameNotFoundException(username));
+    public UserDetails loadUserByUsername(String name) throws UsernameNotFoundException {
+        Member member = memberRepository.findById(name).orElseThrow(() -> new UsernameNotFoundException(username));
 
 
         List<Authorities> items = member.getAuthorities();
