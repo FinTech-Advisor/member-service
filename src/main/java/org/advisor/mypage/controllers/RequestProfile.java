@@ -17,7 +17,7 @@ public class RequestProfile {
     @Id
     @NotBlank
     private String id;
-
+    private String mode;
     private String email;
 
     @NotBlank

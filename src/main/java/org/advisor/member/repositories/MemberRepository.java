@@ -12,7 +12,7 @@ import java.util.Optional;
 public interface MemberRepository extends JpaRepository<Member, Long>, QuerydslPredicateExecutor<Member> {
 
     @EntityGraph("authorities")
-    Optional<Member> findByEmail(String email);
+    Optional<Member> findById(String id);
 
     default boolean exists(String email) {
         QMember member = QMember.member;
