@@ -1,15 +1,13 @@
 package org.advisor.member.controllers;
 
 import jakarta.persistence.Id;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 import lombok.Data;
 import org.advisor.member.constants.Gender;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Data
 public class RequestJoin {
@@ -45,7 +43,16 @@ public class RequestJoin {
     @NotBlank
     private String address; // 주소
     private String addressSub; // 나머지 주소
+    @AssertTrue
+    private boolean requiredTerms1; // 필수 약관 동의 여부
 
+    @AssertTrue
+    private boolean requiredTerms2;
+
+    @AssertTrue
+    private boolean requiredTerms3;
+
+    private List<String> optionalTerms;
 
 
 
