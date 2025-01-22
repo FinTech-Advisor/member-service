@@ -1,14 +1,11 @@
 package org.advisor.member.services;
 
+import lombok.RequiredArgsConstructor;
 import org.advisor.member.MemberInfo;
 import org.advisor.member.constants.Authority;
 import org.advisor.member.entities.Authorities;
 import org.advisor.member.entities.Member;
 import org.advisor.member.repositories.MemberRepository;
-import com.querydsl.jpa.impl.JPAQueryFactory;
-import jakarta.servlet.http.HttpServletRequest;
-import lombok.RequiredArgsConstructor;
-import org.modelmapper.ModelMapper;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -24,9 +21,7 @@ import java.util.List;
 public class MemberInfoService implements UserDetailsService {
 
     private final MemberRepository memberRepository;
-    private final JPAQueryFactory queryFactory;
-    private final HttpServletRequest request;
-    private final ModelMapper modelMapper;
+
 
     @Override
     public UserDetails loadUserByUsername(String name) throws UsernameNotFoundException {

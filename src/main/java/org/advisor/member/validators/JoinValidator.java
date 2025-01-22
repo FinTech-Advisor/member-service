@@ -34,13 +34,13 @@ public class JoinValidator implements Validator, PasswordValidator {
          * 2. 비밀번호 복잡성 - 알파벳 대소문자 각각 1개 이상, 숫자 1개 이상, 특수 문자 포함
          * 3. 비밀번호, 비밀번호 확인 일치 여부
          */
-        String email = form.getEmail();
+        String id = form.getId();
         String password = form.getPassword();
         String confirmPassword = form.getConfirmPassword();
 
         // 1. 이메일 중복 여부 체크
-        if (memberRepository.exists(email)) {
-            errors.rejectValue("email", "Duplicated");
+        if (memberRepository.exists(id)) {
+            errors.rejectValue("id", "Duplicated");
         }
 
 

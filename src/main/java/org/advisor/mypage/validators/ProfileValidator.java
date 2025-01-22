@@ -26,11 +26,11 @@ public class ProfileValidator implements Validator, PasswordValidator {
         RequestProfile form = (RequestProfile)target;
         String password = form.getPassword();
         String confirmPassword = form.getConfirmPassword();
-        String email = form.getEmail();
+        String id = form.getId();
         String mode = form.getMode();
 
-        if (StringUtils.hasText(mode) && mode.equals("admin") && !StringUtils.hasText(email)) {
-            errors.rejectValue("email", "NotBlank");
+        if (StringUtils.hasText(mode) && mode.equals("admin") && !StringUtils.hasText(id)) {
+            errors.rejectValue("id", "NotBlank");
         }
 
         if (!StringUtils.hasText(password)) {

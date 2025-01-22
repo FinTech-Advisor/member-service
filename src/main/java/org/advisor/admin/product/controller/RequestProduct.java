@@ -21,8 +21,6 @@ public class RequestProduct {
     private String summary; // 상품 요약 설명
     private String description; // 상품 상세 설명
 
-    private int consumerPrice; // 소비자가
-    private int salePrice; // 판매가
 
 
 
