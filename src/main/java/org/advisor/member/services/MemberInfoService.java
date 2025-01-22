@@ -30,7 +30,7 @@ public class MemberInfoService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String name) throws UsernameNotFoundException {
-        Member member = memberRepository.findById(name).orElseThrow(() -> new UsernameNotFoundException(username));
+        Member member = memberRepository.findById(name).orElseThrow(() -> new UsernameNotFoundException(name));
 
 
         List<Authorities> items = member.getAuthorities();
