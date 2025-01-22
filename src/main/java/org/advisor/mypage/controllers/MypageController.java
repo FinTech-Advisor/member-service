@@ -1,10 +1,7 @@
 package org.advisor.mypage.controllers;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/mypage")
@@ -25,5 +22,13 @@ return null;
     @GetMapping("/myboard")
     public String myboard(){
     return null;
+    }
+    @GetMapping("/quit")
+    public String quit(@PathVariable("seq") long seq){
+    return null;
+    }
+    @PostMapping("/quit_ps")
+    public String quit_ps(@PathVariable("seq") long seq){
+        return null;
     }
 }
