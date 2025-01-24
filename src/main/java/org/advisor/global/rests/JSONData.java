@@ -9,11 +9,14 @@ import org.springframework.http.HttpStatus;
 public class JSONData {
 
     private HttpStatus status = HttpStatus.OK;
-    private boolean success = true;
+        private boolean success = true;
     private Object message; // 실패시 에러 메세지
     private Object data; // 성공시 데이터
 
     public JSONData(Object data) {
         this.data = data;
+    }
+
+    public JSONData(String message, String memberId) {
     }
 }

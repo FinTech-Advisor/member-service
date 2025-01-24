@@ -49,6 +49,20 @@ public class TokenService {
      * @param email
      * @return
      */
+    public String create(String email, String password) {
+        MemberInfo memberInfo = (MemberInfo)infoService.loadUserByUsername(email);
+
+        String authorities = memberInfo.getAuthorities().stream().map(a -> a.getAuthority()).collect(Collectors.joining("||"));
+        int validTime = properties.getValidTime() * 1000;
+        Date date = new Date((new Date()).getTime() + validTime); // 15분 뒤의 시간(만료 시간)
+
+        return Jwts.builder()
+                .setSubject(memberInfo.getEmail())
+                .claim("authorities", authorities)
+                .signWith(key, SignatureAlgorithm.HS512)
+                .setExpiration(date)
+                .compact();
+    }
     public String create(String email) {
         MemberInfo memberInfo = (MemberInfo)infoService.loadUserByUsername(email);
 
