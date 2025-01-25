@@ -31,7 +31,7 @@ public class Member extends BaseEntity implements Serializable {
 
     private boolean requiredTerms3;
 
-    @Column(length=50)
+    @Column
     private String optionalTerms; // 선택 약관
 
     @JsonIgnore
