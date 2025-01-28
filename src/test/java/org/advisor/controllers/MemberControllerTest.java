@@ -36,7 +36,9 @@ public class MemberControllerTest {
         // 회원 가입
         RequestJoin form = new RequestJoin();
         form.setEmail("user01@test.org");
+        form.setId("rlaehddud");
         form.setName("사용자01");
+        form.setMobile("010-1234-1234");
         form.setPassword("_aA123456");
         form.setConfirmPassword(form.getPassword());
         form.setRequiredTerms1(true);
@@ -51,7 +53,7 @@ public class MemberControllerTest {
 
         // 로그인 테스트 - 토큰 발급
         RequestLogin loginForm = new RequestLogin();
-        loginForm.setEmail(form.getEmail());
+        loginForm.setId(form.getId());
         loginForm.setPassword(form.getPassword());
         String loginBody = om.writeValueAsString(loginForm);
         String body3 = mockMvc.perform(post("/login")

@@ -35,9 +35,9 @@ public class LoginValidator implements Validator {
          */
 
         RequestLogin form = (RequestLogin) target;
-        String email = form.getEmail();
+        String id = form.getId();
         String password = form.getPassword();
-        Member member = memberRepository.findByEmail(email).orElse(null);
+        Member member = memberRepository.findByEmail(id).orElse(null);
         if (member == null) {
             errors.reject("Mismatch.login");
             return;

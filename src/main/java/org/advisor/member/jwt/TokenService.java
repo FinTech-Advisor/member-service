@@ -46,11 +46,11 @@ public class TokenService {
     /**
      * JWT 토큰 생성
      *
-     * @param email
+     * @param id
      * @return
      */
-    public String create(String email) {
-        MemberInfo memberInfo = (MemberInfo)infoService.loadUserByUsername(email);
+    public String create(String id) {
+        MemberInfo memberInfo = (MemberInfo)infoService.loadUserByUsername(id);
 
         String authorities = memberInfo.getAuthorities().stream().map(a -> a.getAuthority()).collect(Collectors.joining("||"));
         int validTime = properties.getValidTime() * 1000;

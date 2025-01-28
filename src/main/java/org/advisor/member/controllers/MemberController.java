@@ -23,6 +23,21 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequiredArgsConstructor
 public class MemberController {
+    @ModelAttribute("requestAgree")
+    public RequestAgree requestAgree() {
+        return new RequestAgree();
+    }
+
+    @ModelAttribute("requestLogin")
+    public RequestLogin requestLogin() {
+        return new RequestLogin();
+    }
+
+    // 이메일 인증 여부
+    @ModelAttribute("authCodeVerified")
+    public boolean authCodeVerified() {
+        return false;
+    }
 
     @Value("${front.domain}")
     private String frontDomain;
@@ -60,8 +75,8 @@ public class MemberController {
             throw new BadRequestException(utils.getErrorMessages(errors));
         }
 
-        String email = form.getEmail();
-        String token = tokenService.create(email);
+        String id = form.getId();
+        String token = tokenService.create(id);
 
 
 

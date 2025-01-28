@@ -16,6 +16,8 @@ public class Member extends BaseEntity implements Serializable {
     @Id @GeneratedValue
     private Long seq; // 회원 번호
 
+    private String id;
+
     @Column(length=65, nullable = false, unique = true)
     private String email; // 이메일
 
