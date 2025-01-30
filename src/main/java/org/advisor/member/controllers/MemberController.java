@@ -1,5 +1,10 @@
+
 package org.advisor.member.controllers;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.advisor.global.exceptions.BadRequestException;
 import org.advisor.global.libs.Utils;
 import org.advisor.global.rests.JSONData;
@@ -8,10 +13,6 @@ import org.advisor.member.jwt.TokenService;
 import org.advisor.member.services.MemberUpdateService;
 import org.advisor.member.validators.JoinValidator;
 import org.advisor.member.validators.LoginValidator;
-import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -60,8 +61,8 @@ public class MemberController {
             throw new BadRequestException(utils.getErrorMessages(errors));
         }
 
-        String email = form.getEmail();
-        String token = tokenService.create(email);
+        String id = form.getId();
+        String token = tokenService.create(id);
 
 
 

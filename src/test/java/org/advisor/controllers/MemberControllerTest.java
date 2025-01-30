@@ -1,8 +1,9 @@
+
 package org.advisor.controllers;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.advisor.member.controllers.RequestJoin;
 import org.advisor.member.controllers.RequestLogin;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -17,7 +18,6 @@ import java.util.List;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-
 
 @SpringBootTest
 @ActiveProfiles({"default", "test", "jwt"})
@@ -36,6 +36,7 @@ public class MemberControllerTest {
         // 회원 가입
         RequestJoin form = new RequestJoin();
         form.setEmail("user01@test.org");
+        form.setId("rlaehddud");
         form.setName("사용자01");
         form.setPassword("_aA123456");
         form.setConfirmPassword(form.getPassword());
@@ -51,7 +52,7 @@ public class MemberControllerTest {
 
         // 로그인 테스트 - 토큰 발급
         RequestLogin loginForm = new RequestLogin();
-        loginForm.setEmail(form.getEmail());
+        loginForm.setId(form.getId());
         loginForm.setPassword(form.getPassword());
         String loginBody = om.writeValueAsString(loginForm);
         String body3 = mockMvc.perform(post("/login")

@@ -6,7 +6,7 @@ import lombok.Data;
 @Data
 public class RequestLogin {
     @NotBlank
-    private String email;
+    private String id;
 
     @NotBlank
     private String password;

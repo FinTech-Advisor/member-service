@@ -1,9 +1,10 @@
 package org.advisor.global.configs;
 
-
-import org.advisor.member.jwt.filters.LoginFilter;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.advisor.member.jwt.JwtProperties;
+import org.advisor.member.jwt.filters.LoginFilter;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -14,43 +15,34 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.web.filter.CorsFilter;
 
 @Configuration
-@EnableWebSecurity // 기본 보안 정책 활성화
-@EnableMethodSecurity // @PreAuthorize, @PostAuthorize
+@EnableWebSecurity
+@EnableMethodSecurity
+@EnableConfigurationProperties(JwtProperties.class)
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-    private final CorsFilter corsFilter;
     private final LoginFilter loginFilter;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-
-        /*
-         SessionCreationPolicy
-            - ALWAYS : 서버가 시작되었을때 부터 세션 생성, 세션 아이디
-            - IF_REQUIRED : 세션이 필요한 시점에 세션 을 생성(기본값)
-            - NEVER : 세션 생성 X, 기존에 세션이 존재하면 그거는 사용
-            - STATELESS : 세션 생성 X, 기본 생성된 세션도 사용 X
-         */
-
         http.csrf(c -> c.disable())
-                .sessionManagement(c -> c.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .addFilterBefore(corsFilter, UsernamePasswordAuthenticationFilter.class)
-                .addFilterBefore(loginFilter, UsernamePasswordAuthenticationFilter.class)
+                .sessionManagement(c -> c.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // 세션 사용 안 함
+                .cors()  // Spring Security 기본 CORS 활성화
+                .and()
+                .addFilterBefore(loginFilter, UsernamePasswordAuthenticationFilter.class) // 로그인 필터 추가
                 .exceptionHandling(c -> {
                     c.authenticationEntryPoint((req, res, e) -> {
                         res.sendError(HttpServletResponse.SC_UNAUTHORIZED);
-                    }); // 미로그인 상태에서 접근 한 경우
+                    });
                     c.accessDeniedHandler((req, res, e) -> {
                         res.sendError(HttpServletResponse.SC_UNAUTHORIZED);
-                    }); // 로그인 후 권한이 없는 경우
+                    });
                 })
                 .authorizeHttpRequests(c -> {
                     c.requestMatchers(
-                                    "/join", // /api/v1/member/join
+                                    "/join",
                                     "/login",
                                     "/apidocs.html",
                                     "/swagger-ui*/**",
@@ -59,12 +51,11 @@ public class SecurityConfig {
                             .anyRequest().authenticated();
                 });
 
-
         return http.build();
     }
 
     @Bean
     public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
+        return new BCryptPasswordEncoder(); // 패스워드 암호화
     }
 }
