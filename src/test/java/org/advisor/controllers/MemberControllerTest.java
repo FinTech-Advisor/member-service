@@ -1,8 +1,9 @@
+
 package org.advisor.controllers;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.advisor.member.controllers.RequestJoin;
 import org.advisor.member.controllers.RequestLogin;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -17,7 +18,6 @@ import java.util.List;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-
 
 @SpringBootTest
 @ActiveProfiles({"default", "test", "jwt"})
@@ -38,7 +38,6 @@ public class MemberControllerTest {
         form.setEmail("user01@test.org");
         form.setId("rlaehddud");
         form.setName("사용자01");
-        form.setMobile("010-1234-1234");
         form.setPassword("_aA123456");
         form.setConfirmPassword(form.getPassword());
         form.setRequiredTerms1(true);

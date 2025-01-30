@@ -1,10 +1,11 @@
 package org.advisor.member.entities;
 
-import org.advisor.global.entities.BaseEntity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.ToString;
+import org.advisor.global.entities.BaseEntity;
+import org.advisor.member.constants.Status;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
@@ -23,9 +24,14 @@ public class Member extends BaseEntity implements Serializable {
 
     @Column(length=65)
     private String password;
+    @Column(length=65)
+    private String confirmPassword;
+
 
     @Column(length=40, nullable = false)
     private String name;
+
+    private String phone;
 
     private boolean requiredTerms1;
 
@@ -43,4 +49,18 @@ public class Member extends BaseEntity implements Serializable {
 
     // 비밀번호 변경 일시
     private LocalDateTime credentialChangedAt;
+
+    private Status status;
+
+    public void updateProfile(String name, String email, String phone,String password,String confirmPassword) {
+        this.name = name;
+        this.email = email;
+        this.phone = phone;
+        this.password=password;
+        this.confirmPassword=confirmPassword;
+
+    }
+
+
+
 }
