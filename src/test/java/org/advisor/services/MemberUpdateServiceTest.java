@@ -26,6 +26,9 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 public class MemberUpdateServiceTest {
 
+    private static final String MEMBER_ID = "member123";
+    private static final String INVALID_MEMBER_ID = "nonexistentMember";
+
     @Mock
     private MemberRepository memberRepository;
 
@@ -49,7 +52,7 @@ public class MemberUpdateServiceTest {
     @BeforeEach
     void setUp() {
         testMember = new Member();
-        testMember.setId("member123");
+        testMember.setId(MEMBER_ID);
         testMember.setName("John Doe");
         testMember.setEmail("johndoe@example.com");
         testMember.setPhone("010-1234-5678");
@@ -71,7 +74,7 @@ public class MemberUpdateServiceTest {
 
         assertNotNull(members);
         assertEquals(1, members.size());
-        assertEquals(testMember.getId(), members.get(0).getId());
+        assertEquals(MEMBER_ID, members.get(0).getId());
     }
 
     @Test
@@ -82,17 +85,16 @@ public class MemberUpdateServiceTest {
         String updatedPassword = "newpassword123";
 
         when(passwordEncoder.encode(updatedPassword)).thenReturn("hashedPassword123");
-        when(memberRepository.findById("member123")).thenReturn(Optional.of(testMember));
+        when(memberRepository.findById(MEMBER_ID)).thenReturn(Optional.of(testMember));
         when(memberRepository.save(any(Member.class))).thenReturn(testMember);
 
         Member updatedMember = memberUpdateService.updateMemberProfile(
-                "member123", updatedName, updatedEmail, updatedPhone, updatedPassword);
+                MEMBER_ID, updatedName, updatedEmail, updatedPhone, updatedPassword);
 
         assertNotNull(updatedMember);
         assertEquals(updatedName, updatedMember.getName());
         assertEquals(updatedEmail, updatedMember.getEmail());
         assertEquals(updatedPhone, updatedMember.getPhone());
-        assertNotEquals(updatedPassword, updatedMember.getPassword());
         assertEquals("hashedPassword123", updatedMember.getPassword());
     }
 
@@ -100,53 +102,48 @@ public class MemberUpdateServiceTest {
     void testUpdateMemberRoles_Failure_InvalidRole() {
         List<String> newRoles = List.of("INVALID_ROLE");
 
-        when(memberRepository.findById("member123")).thenReturn(Optional.of(testMember));
-        when(authoritiesRepository.findAllById(testMember.getId())).thenReturn(List.of());
+        when(memberRepository.findById(MEMBER_ID)).thenReturn(Optional.of(testMember));
 
         RuntimeException exception = assertThrows(RuntimeException.class, () -> {
-            memberUpdateService.updateMemberRoles("member123", newRoles);
+            memberUpdateService.updateMemberRoles(MEMBER_ID, newRoles);
         });
 
-        assertTrue(exception.getMessage().contains("Invalid role"));
+        assertEquals("Invalid role: INVALID_ROLE", exception.getMessage());
     }
 
     @Test
     void testChangeMemberPassword_Failure_ShortPassword() {
         String shortPassword = "short";
 
-        when(memberRepository.findById("member123")).thenReturn(Optional.of(testMember));
-
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
-            memberUpdateService.changeMemberPassword("member123", shortPassword);
+            memberUpdateService.changeMemberPassword(MEMBER_ID, shortPassword);
         });
 
-        assertNotNull(exception.getMessage());
-        assertTrue(exception.getMessage().contains("Password must be at least 8 characters"));
+        assertEquals("Password must be at least 8 characters", exception.getMessage());
     }
 
     @Test
     void testUpdateMemberProfile_Failure_MemberNotFound() {
-        String invalidMemberId = "nonexistentMember";
         String updatedName = "Jane Doe";
         String updatedEmail = "janedoe@example.com";
         String updatedPhone = "010-2345-6789";
         String updatedPassword = "newpassword123";
 
-        when(memberRepository.findById(invalidMemberId)).thenReturn(Optional.empty());
+        when(memberRepository.findById(INVALID_MEMBER_ID)).thenReturn(Optional.empty());
 
         RuntimeException exception = assertThrows(RuntimeException.class, () -> {
             memberUpdateService.updateMemberProfile(
-                    invalidMemberId, updatedName, updatedEmail, updatedPhone, updatedPassword);
+                    INVALID_MEMBER_ID, updatedName, updatedEmail, updatedPhone, updatedPassword);
         });
 
-        assertTrue(exception.getMessage().contains("Member not found with id"));
+        assertEquals("Member not found with id: " + INVALID_MEMBER_ID, exception.getMessage());
     }
 
     @Test
     void testDeleteMember() {
-        when(memberRepository.findById("member123")).thenReturn(Optional.of(testMember));
+        when(memberRepository.findById(MEMBER_ID)).thenReturn(Optional.of(testMember));
 
-        memberUpdateService.deleteMember("member123");
+        memberUpdateService.deleteMember(MEMBER_ID);
 
         verify(memberRepository, times(1)).delete(testMember);
     }
@@ -155,13 +152,12 @@ public class MemberUpdateServiceTest {
     void testChangeMemberPassword() {
         String newPassword = "newPassword123";
 
-        when(memberRepository.findById("member123")).thenReturn(Optional.of(testMember));
+        when(memberRepository.findById(MEMBER_ID)).thenReturn(Optional.of(testMember));
         when(passwordEncoder.encode(newPassword)).thenReturn("hashedNewPassword123");
         when(memberRepository.save(any(Member.class))).thenReturn(testMember);
 
-        memberUpdateService.changeMemberPassword("member123", newPassword);
+        memberUpdateService.changeMemberPassword(MEMBER_ID, newPassword);
 
-        assertNotEquals(newPassword, testMember.getPassword());
         assertEquals("hashedNewPassword123", testMember.getPassword());
     }
 
@@ -169,13 +165,12 @@ public class MemberUpdateServiceTest {
     void testUpdateMemberRoles() {
         List<String> newRoles = List.of("ADMIN", "USER");
 
-        when(memberRepository.findById("member123")).thenReturn(Optional.of(testMember));
-        when(authoritiesRepository.findAllById(testMember.getId())).thenReturn(List.of());
+        when(memberRepository.findById(MEMBER_ID)).thenReturn(Optional.of(testMember));
 
-        Member updatedMember = memberUpdateService.updateMemberRoles("member123", newRoles);
+        Member updatedMember = memberUpdateService.updateMemberRoles(MEMBER_ID, newRoles);
 
         assertNotNull(updatedMember);
-        verify(authoritiesRepository, times(1)).deleteAll(testMember.getId());
+        verify(authoritiesRepository, times(1)).deleteAllByMember_Id(testMember.getId());
         verify(authoritiesRepository, times(1)).saveAll(any());
     }
 }

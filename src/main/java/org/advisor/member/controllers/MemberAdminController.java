@@ -1,10 +1,12 @@
 package org.advisor.member.controllers;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.advisor.member.entities.Member;
 import org.advisor.member.services.MemberUpdateService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -16,108 +18,107 @@ public class MemberAdminController {
 
     private final MemberUpdateService memberUpdateService;
 
-
-    /**
-     * 1. 회원 목록 조회 (GET /admin/member/list)
-     * 모든 회원을 조회하는 API
-     */
     @GetMapping("/list")
+    @PreAuthorize("hasRole('ADMIN')") // ADMIN 권한 필요
     public ResponseEntity<List<Member>> getMemberList() {
         List<Member> members = memberUpdateService.getAllMembers();
-        if (members.isEmpty()) {
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT); // 회원이 없으면 204 반환
+        if (members == null || members.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
         }
-        return new ResponseEntity<>(members, HttpStatus.OK); // 회원 목록 반환
+        return ResponseEntity.ok(members);
     }
 
-    /**
-     * 2. 회원 상세 조회 (GET /admin/member/view/{seq})
-     * 특정 회원의 정보를 조회하는 API
-     */
     @GetMapping("/view/{seq}")
+    @PreAuthorize("hasRole('ADMIN')") // ADMIN 권한 필요
     public ResponseEntity<Member> getMemberDetail(@PathVariable String seq) {
+        if (seq == null || seq.isBlank()) {
+            return ResponseEntity.badRequest().build();
+        }
+
         Member member = memberUpdateService.getMemberById(seq);
         if (member == null) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND); // 회원이 없으면 404 반환
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
-        return new ResponseEntity<>(member, HttpStatus.OK); // 회원 정보 반환
+        return ResponseEntity.ok(member);
     }
 
-    /**
-     * 3. 회원 정보 수정 (POST /admin/member/save/{seq})
-     * 특정 회원의 정보를 수정하는 API
-     */
     @PostMapping("/save/{seq}")
-    public ResponseEntity<Member> updateMember(@PathVariable String seq, @RequestBody Member member) {
+    @PreAuthorize("hasRole('ADMIN')") // ADMIN 권한 필요
+    public ResponseEntity<Member> updateMember(@PathVariable String seq, @RequestBody @Valid Member member) {
+        if (seq == null || seq.isBlank()) {
+            return ResponseEntity.badRequest().build();
+        }
+
         try {
-            Member updatedMember = memberUpdateService.updateMemberProfile(seq, member.getName(), member.getEmail(), member.getPhone(),member.getPassword());
-            return new ResponseEntity<>(updatedMember, HttpStatus.OK); // 수정된 회원 반환
+            Member updatedMember = memberUpdateService.updateMemberProfile(
+                    seq, member.getName(), member.getEmail(), member.getPhone(), member.getPassword());
+            return ResponseEntity.ok(updatedMember);
         } catch (RuntimeException e) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND); // 회원이 없으면 404 반환
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
     }
 
-    /**
-     * 4. 회원 강퇴 (POST /admin/member/quit/{seq})
-     * 특정 회원을 강퇴(삭제)하는 API
-     */
     @PostMapping("/quit/{seq}")
-    public ResponseEntity<Void> quitMember(@PathVariable String seq) {
+    @PreAuthorize("hasRole('ADMIN')") // ADMIN 권한 필요
+    public ResponseEntity<Member> quitMember(@PathVariable String seq) {
+        if (seq == null || seq.isBlank()) {
+            return ResponseEntity.badRequest().build();
+        }
+
         try {
-            memberUpdateService.deleteMember(seq); // 회원 강퇴
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT); // 강퇴 완료, 204 반환
+            memberUpdateService.deleteMember(seq); // 회원 탈퇴 처리 메서드 호출
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
         } catch (RuntimeException e) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND); // 회원이 없으면 404 반환
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
     }
 
-    /**
-     * 5. 회원 검색 (GET /admin/member/search)
-     * 회원 이름이나 이메일을 기반으로 회원을 검색하는 API
-     */
     @GetMapping("/search")
+    @PreAuthorize("hasRole('ADMIN')") // ADMIN 권한 필요
     public ResponseEntity<List<Member>> searchMembers(
             @RequestParam(required = false) String name,
             @RequestParam(required = false) String email) {
 
         List<Member> members = memberUpdateService.searchMembers(name, email);
-        if (members.isEmpty()) {
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT); // 검색된 회원이 없으면 204 반환
+        if (members == null || members.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
         }
-        return new ResponseEntity<>(members, HttpStatus.OK); // 검색된 회원 목록 반환
+        return ResponseEntity.ok(members);
     }
 
-    /**
-     * 6. 회원 권한 수정 (POST /admin/member/role/{seq})
-     * 특정 회원의 권한을 수정하는 API
-     */
     @PostMapping("/role/{seq}")
+    @PreAuthorize("hasRole('ADMIN')") // ADMIN 권한 필요
     public ResponseEntity<Member> updateMemberRole(
             @PathVariable String seq,
-            @RequestParam List<String> roles) { // roles는 리스트로 받기
+            @RequestParam List<String> roles) {
+
+        if (seq == null || seq.isBlank() || roles == null || roles.isEmpty()) {
+            return ResponseEntity.badRequest().build();
+        }
 
         try {
-            Member updatedMember = memberUpdateService.updateMemberRoles(seq, roles); // 여러 권한을 업데이트
-            return new ResponseEntity<>(updatedMember, HttpStatus.OK); // 권한 수정된 회원 반환
+            Member updatedMember = memberUpdateService.updateMemberRoles(seq, roles);
+            return ResponseEntity.ok(updatedMember);
         } catch (RuntimeException e) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND); // 회원이 없으면 404 반환
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
     }
 
-    /**
-     * 7. 회원 비밀번호 변경 (POST /admin/member/password/{seq})
-     * 특정 회원의 비밀번호를 변경하는 API
-     */
     @PostMapping("/password/{seq}")
-    public ResponseEntity<Void> changeMemberPassword(
+    @PreAuthorize("hasRole('ADMIN')") // ADMIN 권한 필요
+    public ResponseEntity<Member> changeMemberPassword(
             @PathVariable String seq,
             @RequestParam String newPassword) {
 
+        if (seq == null || seq.isBlank() || newPassword == null || newPassword.isBlank()) {
+            return ResponseEntity.badRequest().build();
+        }
+
         try {
-            memberUpdateService.changeMemberPassword(seq, newPassword); // 비밀번호 변경 처리
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT); // 비밀번호 변경 완료, 204 반환
+            Member updatedMember = memberUpdateService.changeMemberPassword(seq, newPassword);
+            return ResponseEntity.ok(updatedMember);
         } catch (RuntimeException e) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND); // 회원이 없으면 404 반환
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
     }
 }

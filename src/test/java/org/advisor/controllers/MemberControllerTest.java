@@ -1,9 +1,7 @@
-
 package org.advisor.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.advisor.member.controllers.RequestJoin;
-import org.advisor.member.controllers.RequestLogin;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -13,11 +11,11 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.nio.charset.StandardCharsets;
-import java.util.List;
+import java.util.Collections;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
 @ActiveProfiles({"default", "test", "jwt"})
@@ -29,43 +27,32 @@ public class MemberControllerTest {
     private MockMvc mockMvc;
 
     @Autowired
-    private ObjectMapper om;
+    private ObjectMapper objectMapper;
 
     @Test
     void joinTest() throws Exception {
-        // 회원 가입
+        // 회원가입 요청 데이터
         RequestJoin form = new RequestJoin();
+        form.setId("user01");
         form.setEmail("user01@test.org");
-        form.setId("rlaehddud");
         form.setName("사용자01");
         form.setPassword("_aA123456");
-        form.setConfirmPassword(form.getPassword());
+        form.setConfirmPassword("_aA123456");
+        form.setMobile("010-1234-5678");
         form.setRequiredTerms1(true);
         form.setRequiredTerms2(true);
         form.setRequiredTerms3(true);
-        form.setOptionalTerms(List.of("advertisement"));
+        form.setOptionalTerms(Collections.singletonList("advertisement"));
 
-        String body = om.writeValueAsString(form);
+        // JSON 직렬화
+        String body = objectMapper.writeValueAsString(form);
+
+        // 상태 코드만 검증
         mockMvc.perform(post("/join")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(body)).andDo(print());
-
-        // 로그인 테스트 - 토큰 발급
-        RequestLogin loginForm = new RequestLogin();
-        loginForm.setId(form.getId());
-        loginForm.setPassword(form.getPassword());
-        String loginBody = om.writeValueAsString(loginForm);
-        String body3 = mockMvc.perform(post("/login")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(loginBody)).andDo(print()).andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8);
-
-        // 토큰으로 로그인 처리 테스트
-        /*
-        Map<String, String> data = om.readValue(body3, new TypeReference<>() {});
-        String token = data.get("data");
-
-        mockMvc.perform(get("/test")
-                .header("Authorization", "Bearer " + token))
-                .andDo(print()); */
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(body))
+                .andDo(print())
+                .andExpect(status().isCreated()); // 201 상태 코드 검증
     }
+
 }

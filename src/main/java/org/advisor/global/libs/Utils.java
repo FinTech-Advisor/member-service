@@ -32,31 +32,20 @@ public class Utils {
     public String getMessage(String code) {
         Locale lo = request.getLocale(); // 사용자 요청 헤더(Accept-Language)
 
-        try {
-            return messageSource.getMessage(code, null, lo);
-        } catch (Exception e) {
-            log.error("Error retrieving message for code '{}': {}", code, e.getMessage());
-            return code;  // 에러가 발생하면 코드 자체를 반환
-        }
+        return messageSource.getMessage(code, null, lo);
     }
 
-    /**
-     * 다수의 메시지 코드로 조회된 문구 리스트
-     *
-     * @param codes
-     * @return
-     */
     public List<String> getMessages(String[] codes) {
-        return Arrays.stream(codes).map(code -> {
+
+        return Arrays.stream(codes).map(c -> {
             try {
-                return getMessage(code);
+                return getMessage(c);
             } catch (Exception e) {
-                log.warn("Failed to get message for code '{}': {}", code, e.getMessage());
                 return "";
             }
         }).filter(s -> !s.isBlank()).toList();
-    }
 
+    }
     /**
      * REST 커맨드 객체 검증 실패시에 에러 코드를 가지고 메시지 추출
      *

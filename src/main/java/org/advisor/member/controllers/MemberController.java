@@ -36,7 +36,7 @@ public class MemberController {
 
     @PostMapping("/join")
     @ResponseStatus(HttpStatus.CREATED)
-    public void join(@RequestBody @Valid RequestJoin form, Errors errors) {
+    public JSONData join(@RequestBody @Valid RequestJoin form, Errors errors) {
         joinValidator.validate(form, errors);
 
         if (errors.hasErrors()) {
@@ -44,6 +44,7 @@ public class MemberController {
         }
 
         updateService.process(form);
+        return new JSONData();
     }
 
     /**
