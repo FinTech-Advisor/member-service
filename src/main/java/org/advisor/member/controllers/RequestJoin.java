@@ -16,7 +16,7 @@ public class RequestJoin {
     private String email; // 이메일
 
     @NotBlank
-    private String id;
+    private String id   ;
 
     @NotBlank
     private String name; // 회원명

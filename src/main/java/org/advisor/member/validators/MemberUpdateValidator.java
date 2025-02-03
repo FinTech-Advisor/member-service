@@ -41,8 +41,8 @@ public class MemberUpdateValidator implements Validator {
         }
 
         // 전화번호 검증 (전화번호 패턴)
-        if (member.getPhone() != null && !member.getPhone().trim().isEmpty()) {
-            if (!isValidPhoneNumber(member.getPhone())) {
+        if (member.getMobile() != null && !member.getMobile().trim().isEmpty()) {
+            if (!isValidPhoneNumber(member.getMobile())) {
                 errors.rejectValue("phone", "phone.invalid", "유효한 전화번호를 입력해 주세요.");
             }
         }

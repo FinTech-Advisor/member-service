@@ -1,11 +1,16 @@
 package org.advisor.services;
 
+import org.advisor.global.exceptions.BadRequestException;
 import org.advisor.global.libs.Utils;
 import org.advisor.member.constants.Status;
+import org.advisor.member.controllers.RequestChangePassword;
+import org.advisor.member.controllers.RequestFindPassword;
 import org.advisor.member.entities.Member;
+import org.advisor.member.entities.TempToken;
 import org.advisor.member.repositories.AuthoritiesRepository;
 import org.advisor.member.repositories.MemberRepository;
 import org.advisor.member.services.MemberUpdateService;
+import org.advisor.member.services.TempTokenService;
 import org.advisor.member.validators.MemberUpdateValidator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -43,10 +48,11 @@ public class MemberUpdateServiceTest {
 
     @Mock
     private PasswordEncoder passwordEncoder;
-
+    @Mock
+    private TempTokenService tempTokenService;
     @InjectMocks
     private MemberUpdateService memberUpdateService;
-
+    private TempToken tempToken;
     private Member testMember;
 
     @BeforeEach
@@ -55,7 +61,7 @@ public class MemberUpdateServiceTest {
         testMember.setId(MEMBER_ID);
         testMember.setName("John Doe");
         testMember.setEmail("johndoe@example.com");
-        testMember.setPhone("010-1234-5678");
+        testMember.setMobile("010-1234-5678");
         testMember.setPassword("password123");
         testMember.setConfirmPassword("password123");
         testMember.setRequiredTerms1(true);
@@ -64,6 +70,9 @@ public class MemberUpdateServiceTest {
         testMember.setOptionalTerms("");
         testMember.setCredentialChangedAt(LocalDateTime.now());
         testMember.setStatus(Status.ACTIVE);
+        tempToken = new TempToken();
+        tempToken.setToken("validToken");
+        tempToken.setMember(testMember);
     }
 
     @Test
@@ -94,7 +103,7 @@ public class MemberUpdateServiceTest {
         assertNotNull(updatedMember);
         assertEquals(updatedName, updatedMember.getName());
         assertEquals(updatedEmail, updatedMember.getEmail());
-        assertEquals(updatedPhone, updatedMember.getPhone());
+        assertEquals(updatedPhone, updatedMember.getMobile());
         assertEquals("hashedPassword123", updatedMember.getPassword());
     }
 
@@ -111,16 +120,6 @@ public class MemberUpdateServiceTest {
         assertEquals("Invalid role: INVALID_ROLE", exception.getMessage());
     }
 
-    @Test
-    void testChangeMemberPassword_Failure_ShortPassword() {
-        String shortPassword = "short";
-
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
-            memberUpdateService.changeMemberPassword(MEMBER_ID, shortPassword);
-        });
-
-        assertEquals("Password must be at least 8 characters", exception.getMessage());
-    }
 
     @Test
     void testUpdateMemberProfile_Failure_MemberNotFound() {
@@ -148,18 +147,7 @@ public class MemberUpdateServiceTest {
         verify(memberRepository, times(1)).delete(testMember);
     }
 
-    @Test
-    void testChangeMemberPassword() {
-        String newPassword = "newPassword123";
 
-        when(memberRepository.findById(MEMBER_ID)).thenReturn(Optional.of(testMember));
-        when(passwordEncoder.encode(newPassword)).thenReturn("hashedNewPassword123");
-        when(memberRepository.save(any(Member.class))).thenReturn(testMember);
-
-        memberUpdateService.changeMemberPassword(MEMBER_ID, newPassword);
-
-        assertEquals("hashedNewPassword123", testMember.getPassword());
-    }
 
     @Test
     void testUpdateMemberRoles() {
@@ -172,5 +160,78 @@ public class MemberUpdateServiceTest {
         assertNotNull(updatedMember);
         verify(authoritiesRepository, times(1)).deleteAllByMember_Id(testMember.getId());
         verify(authoritiesRepository, times(1)).saveAll(any());
+    }
+    // issueToken 메서드 테스트
+    @Test
+    void testIssueToken() {
+        RequestFindPassword form = new RequestFindPassword();
+        form.setName("John Doe");
+        form.setMobile("1234567890");
+
+        // 모킹: memberRepository와 tempTokenService
+        when(memberRepository.findByNameAndMobile("John Doe", "1234567890")).thenReturn(Optional.of(testMember));
+        when(tempTokenService.issue(anyString(), any(), any())).thenReturn(tempToken);
+
+        // issueToken 호출
+        memberUpdateService.issueToken(form);
+
+        // 이메일 전송 확인
+        verify(tempTokenService).sendEmail("validToken");
+    }
+
+    // changePassword 메서드 테스트
+    @Test
+    void testChangePassword() {
+        RequestChangePassword form = new RequestChangePassword();
+        form.setToken("validToken");
+        form.setPassword("ValidPassword123!"); // 유효한 비밀번호
+
+        // 모킹: tempTokenService
+        when(tempTokenService.get("validToken")).thenReturn(tempToken);
+        when(passwordEncoder.encode("ValidPassword123!")).thenReturn("encodedPassword");
+
+        // changePassword 호출
+        memberUpdateService.changePassword(form);
+
+        // 비밀번호가 변경되었는지 확인
+        verify(memberRepository).saveAndFlush(testMember);
+        assertEquals("encodedPassword", testMember.getPassword());
+        assertNotNull(testMember.getCredentialChangedAt()); // 비밀번호 변경 시간이 갱신되었는지 확인
+    }
+
+    // 비밀번호 자리수 검증 실패 테스트
+    @Test
+    void testChangePasswordWithShortPassword() {
+        RequestChangePassword form = new RequestChangePassword();
+        form.setToken("validToken");
+        form.setPassword("short"); // 비밀번호 자리수가 너무 짧음
+
+        // 모킹: tempTokenService
+        when(tempTokenService.get("validToken")).thenReturn(tempToken);
+
+        // 예외 발생 확인
+        BadRequestException exception = assertThrows(BadRequestException.class, () -> {
+            memberUpdateService.changePassword(form);
+        });
+
+        assertEquals("Size.requestJoin.password", exception.getMessage()); // 메시지 검증
+    }
+
+    // 비밀번호 복잡성 검증 실패 테스트
+    @Test
+    void testChangePasswordWithWeakPassword() {
+        RequestChangePassword form = new RequestChangePassword();
+        form.setToken("validToken");
+        form.setPassword("weakpassword"); // 복잡성 기준을 만족하지 않는 비밀번호
+
+        // 모킹: tempTokenService
+        when(tempTokenService   .get("validToken")).thenReturn(tempToken);
+
+        // 예외 발생 확인
+        BadRequestException exception = assertThrows(BadRequestException.class, () -> {
+            memberUpdateService.changePassword(form);
+        });
+
+        assertEquals("Complexity.requestJoin.password", exception.getMessage()); // 메시지 검증
     }
 }

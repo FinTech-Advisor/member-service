@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.Data;
 import lombok.ToString;
 import org.advisor.global.entities.BaseEntity;
+import org.advisor.member.constants.Authority;
 import org.advisor.member.constants.Status;
 
 import java.io.Serializable;
@@ -18,22 +19,22 @@ public class Member extends BaseEntity implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY) // 자동 생성
     private Long seq; // 회원 번호, 기본 키
 
-    @Column(length=65, nullable = false, unique = true)
+    @Column(length = 65, nullable = false, unique = true)
     private String id; // 사용자 ID (기본 키가 아님)
 
-    @Column(length=65, nullable = false, unique = true)
+    @Column(length = 65, nullable = false, unique = true)
     private String email; // 이메일
 
-    @Column(length=65)
+    @Column(length = 65)
     private String password;
 
-    @Column(length=65)
+    @Column(length = 65)
     private String confirmPassword;
 
-    @Column(length=40, nullable = false)
+    @Column(length = 40, nullable = false)
     private String name;
 
-    private String phone;
+    private String mobile;
 
     private boolean requiredTerms1;
     private boolean requiredTerms2;
@@ -51,11 +52,16 @@ public class Member extends BaseEntity implements Serializable {
 
     private Status status;
 
-    public void updateProfile(String name, String email, String phone, String password, String confirmPassword) {
+    public void updateProfile(String name, String email, String mobile, String password, String confirmPassword) {
         this.name = name;
         this.email = email;
-        this.phone = phone;
+        this.mobile = mobile;
         this.password = password;
         this.confirmPassword = confirmPassword;
+    }
+
+    public List<Authority> get_authorities() {
+        return authorities == null || authorities.isEmpty() ? List.of()
+                : authorities.stream().map(Authorities::getAuthority).toList();
     }
 }

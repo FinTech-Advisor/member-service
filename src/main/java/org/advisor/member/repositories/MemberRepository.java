@@ -17,7 +17,8 @@ public interface MemberRepository extends JpaRepository<Member, Long>, QuerydslP
     @EntityGraph("authorities")
     Optional<Member> findByEmail(String email);
     Optional<Member> findById(String id);
-    List<Member> findByName(String name);
+ Optional<Member> findByName(String name);
+    Optional<Member> findByNameAndMobile(String name, String mobile);
     List<Member> findByNameContaining(String name);
     List<Member> findByEmailContaining(String email);
     List<Member> findByNameAndEmail(String name, String email);

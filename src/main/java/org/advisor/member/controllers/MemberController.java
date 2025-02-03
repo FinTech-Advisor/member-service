@@ -79,13 +79,45 @@ public class MemberController {
         return new JSONData(token);
     }
 
-    /**
-     * 로그인한 회원정보 조회
-     * @return
-     */
     @GetMapping("/")
     public JSONData info(@AuthenticationPrincipal MemberInfo memberInfo) {
 
         return new JSONData(memberInfo.getMember());
+    }
+
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @PostMapping("/find/password")
+    public void findPassword(@Valid @RequestBody RequestFindPassword form, Errors errors) {
+
+        if (errors.hasErrors()) {
+            throw new BadRequestException(utils.getErrorMessages(errors));
+        }
+
+        updateService.issueToken(form);
+    }
+
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @PostMapping("/find/id")
+    public void findId(@Valid @RequestBody RequestFindId form, Errors errors) {
+        if (errors.hasErrors()) {
+            throw new BadRequestException(utils.getErrorMessages(errors));
+        }
+
+        updateService.findId(form); // ID 찾기 로직을 처리하는 서비스 메서드 호출
+    }
+
+    /**
+     * 비밀번호 변경
+     * @param form
+     * @param errors
+     */
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @PatchMapping("/change/password")
+    public void changePassword(@Valid @RequestBody RequestChangePassword form, Errors errors) {
+        if (errors.hasErrors()) {
+            throw new BadRequestException(utils.getErrorMessages(errors));
+        }
+
+        updateService.changePassword(form);
     }
 }
